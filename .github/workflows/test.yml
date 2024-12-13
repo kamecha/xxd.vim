@@ -31,6 +31,7 @@ jobs:
 
       - name: Setup Vim
         uses: rhysd/action-setup-vim@v1.3.5
+        id: vim
         with:
           version: stable
 
