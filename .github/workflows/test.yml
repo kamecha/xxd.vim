@@ -38,10 +38,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: ${{ github.repository }}
-          path: ${{ github.repository }}
+          path: xxd.vim
 
       - name: Run unit tests with themis.vim
         env:
           THEMIS_VIM: ${{ steps.vim.outputs.executable }}
         run: |
-          ./vim-themis/bin/themis ${{ github.repository }}
+          ./vim-themis/bin/themis ./xxd.vim/test
