@@ -43,5 +43,6 @@ jobs:
       - name: Run unit tests with themis.vim
         env:
           THEMIS_VIM: ${{ steps.vim.outputs.executable }}
+          THEMIS_HOME: ./xxd.vim
         run: |
           ./vim-themis/bin/themis ./xxd.vim/test
