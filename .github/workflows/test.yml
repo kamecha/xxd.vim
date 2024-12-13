@@ -33,6 +33,7 @@ jobs:
         uses: rhysd/action-setup-vim@v1.3.5
         id: vim
         with:
+          neovim: true
           version: stable
 
       - uses: actions/checkout@v3
