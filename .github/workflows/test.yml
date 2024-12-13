@@ -25,12 +25,17 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+        with:
+          repository: thinca/vim-themis
+          path: vim-themis
 
-      - name: Initialize
+      - name: Setup Vim
+        uses: rhysd/action-setup-vim@v1.3.5
+        with:
+          version: stable
+
+      - name: Run unit tests with themis.vim
+        env:
+          THEMIS_VIM: ${{ steps.vim.outputs.executable }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y vim git
-          git clone --depth 1 --single-branch https://github.com/thinca/vim-themis /tmp/vim-themis
-      - name: Run tests
-        run: |
-          /tmp/vim-themis/bin/themis
+          ./vim-themis/bin/themis ./test
