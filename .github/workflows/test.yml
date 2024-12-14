@@ -46,4 +46,4 @@ jobs:
           THEMIS_VIM: ${{ steps.vim.outputs.executable }}
         run: |
           cd xxd.vim
-          ../vim-themis/bin/themis ./test
+          ../vim-themis/bin/themis --reporter spec ./test
