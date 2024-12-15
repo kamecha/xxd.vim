@@ -97,21 +97,22 @@ function! xxd#command#_raw#write(bufnr) abort
 				\->filter({_, v -> type(v) ==# v:t_dict && ( v->keys()[0] ==# 'l' || v->keys()[0] ==# 'len' )})
 				\->get(0, #{l: len})
 				\->get('len', len)
-	let bytes_before = readfile(file, 'B')
-	let bytes_decoded = 0z
+	let bytes = readfile(file, 'B')
 	for line in getbufline(a:bufnr, 1, '$')
-		let bytes_decoded += xxd#util#line2blob(line)
+		let address = xxd#util#line2address(line)
+		let b = xxd#util#line2blob(line)
+		if address + len(b) >= len(bytes)
+			if address > len(bytes)
+				let bytes += repeat(0z00, address - len(bytes))
+				let bytes += b
+			else
+				let bytes[address:] = b[:len(bytes) - address - 1]
+				let bytes += b[len(bytes) - address:]
+			endif
+		else
+			let bytes[address:address + len(b) - 1] = b
+		endif
 	endfor
-	" ここでバイト列を書き込む
-	let bytes = 0z
-	" ここ面倒だから振舞いとかも含めて設定できるようにしたい
-	if seek > 0x00
-		let bytes = bytes_before[: seek - 1]
-		let bytes += bytes_decoded
-		let bytes += bytes_before[seek + len(bytes_decoded):]
-	else
-		let bytes = bytes_decoded
-	endif
 	call writefile(bytes, file, 'b')
 	call setbufvar(a:bufnr, "&modified", 0)
 endfunction
