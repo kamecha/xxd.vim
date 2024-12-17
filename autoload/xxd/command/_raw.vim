@@ -21,11 +21,40 @@ const s:xxd_options = [
 			\]
 
 function! xxd#command#_raw#call(args, options, infile) abort
+	" TODO: 値のバリデーションしたい
 	call xxd#command#_raw#read(a:args, a:options, a:infile)
 endfunction
 
-function! xxd#command#_raw#complete(args) abort
-	" 工事中
+function! xxd#command#_raw#complete(arglead, cmdline, cursorpos) abort
+	" オプション補完
+	let key_options = s:xxd_options
+				\->copy()
+				\->filter({_, v -> type(v) ==# v:t_string})
+				\->map({_, v -> '-' . v})
+	let key_value_options = s:xxd_options
+				\->copy()
+				\->filter({_, v -> type(v) ==# v:t_dict})
+				\->map({_, v -> '-' . v->keys()[0]})
+	if a:arglead =~# '^-.*'
+		" -sオプションの後は`+`or`-`で始まる数値の場合があるから無視
+		let before_option = a:cmdline->split()->get(-2, '')
+		if before_option =~# '^-s$'
+			return []
+		endif
+		return (key_options + key_value_options)->filter({_, v -> v =~# a:arglead})
+	else
+		let before_option = a:cmdline->split()->get(-1, '')
+		if key_value_options->index(before_option) != -1
+			return []
+		endif
+		" ファイル名補完
+		let cwd = getcwd()
+		" ディレクトリは末尾に/をつける
+		let files = glob(cwd . '/' . a:arglead . '*', 0, 1)
+					\->filter({_, v -> v =~# a:arglead})
+					\->map({_, v -> fnamemodify(v, ':.') . (isdirectory(v) ? '/' : '')})
+		return files
+	endif
 endfunction
 
 " args:_raw [options] [infile]
