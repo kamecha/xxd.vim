@@ -1,3 +1,24 @@
+const s:xxd_options = [
+			\'a', 'autoskip',
+			\'b', 'bits',
+			\'C', 'capitalize',
+			\#{c: 'cols'}, #{cols: 'cols'},
+			\'E', 'EBCDIC',
+			\'e',
+			\#{g: 'bytes'}, #{groupsize: 'bytes'},
+			\'h', 'help',
+			\'i', 'include',
+			\#{l: 'len'}, #{len: 'len'},
+			\#{n: 'name'}, #{name: 'name'},
+			\#{o: 'offset'},
+			\'p', 'ps', 'postscript', 'plain',
+			\'r', 'revert',
+			\#{R: 'when'},
+			\#{seek: 'offset'},
+			\#{s: 'seek'},
+			\'u',
+			\'v', 'version',
+			\]
 
 function! xxd#command#_raw#call(args, options, infile) abort
 	call xxd#command#_raw#read(a:args, a:options, a:infile)
@@ -16,34 +37,13 @@ endfunction
 function! xxd#command#_raw#args(args) abort
 	let l:options = []
 	let l:infile = ''
-	const xxd_options = [
-				\'a', 'autoskip',
-				\'b', 'bits',
-				\'C', 'capitalize',
-				\#{c: 'cols'}, #{cols: 'cols'},
-				\'E', 'EBCDIC',
-				\'e',
-				\#{g: 'bytes'}, #{groupsize: 'bytes'},
-				\'h', 'help',
-				\'i', 'include',
-				\#{l: 'len'}, #{len: 'len'},
-				\#{n: 'name'}, #{name: 'name'},
-				\#{o: 'offset'},
-				\'p', 'ps', 'postscript', 'plain',
-				\'r', 'revert',
-				\#{R: 'when'},
-				\#{seek: 'offset'},
-				\#{s: 'seek'},
-				\'u',
-				\'v', 'version',
-				\]
 	let args = a:args->trim("_raw", 1)->split('\s\+')
 	while len(args)
 		let arg = remove(args, 0)
 		if arg =~# '^-'
 			let option = arg->substitute('^-', '', '')
 			" optionが引数を取る場合
-			if xxd_options->copy()->filter({_, v -> type(v) ==# v:t_dict && v->has_key(option)})->len()
+			if s:xxd_options->copy()->filter({_, v -> type(v) ==# v:t_dict && v->has_key(option)})->len()
 				let value = remove(args, 0)
 				let t = {}
 				let t[option] = value
