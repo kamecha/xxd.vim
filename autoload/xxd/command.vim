@@ -22,8 +22,16 @@ function! xxd#command#complete(arglead, cmdline, cursorpos) abort
 	endif
 	let cmdline = matchstr(a:cmdline, '^.\{-}Xxd\s\+\zs.*')
 	let scheme = matchstr(cmdline, '^\w\+')
-	return call(
-				\ printf('xxd#command#%s#complete', scheme),
-				\ [a:arglead, cmdline, a:cursorpos],
-				\)
+	let schemes = glob(expand('<sfile>:p:h') . '/autoload/xxd/command/*.vim', 0, 1)
+				\->map({_, v -> matchstr(fnamemodify(v, ':t'), '^\w\+')})
+	" schemeが正しい場合
+	if schemes->index(scheme) != -1
+		return call(
+					\ printf('xxd#command#%s#complete', scheme),
+					\ [a:arglead, cmdline, a:cursorpos],
+					\)
+	endif
+	return schemes
+				\->filter({_, v -> v !~# '^_.*'})
+				\->filter({_, v -> v =~# a:arglead})
 endfunction
