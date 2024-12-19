@@ -25,6 +25,21 @@ function! xxd#core#view#byte#getcurpos(winid) abort
 	return [ lnum - 1, byteline->split('[0-9a-f]\{2}\zs')->len() - 1 ]
 endfunction
 
+" カーソル位置のアドレスを取得する
+function! xxd#core#view#byte#getaddress(winid) abort
+	let curpos = xxd#core#view#byte#getcurpos(a:winid)
+	let address = xxd#core#view#byte#pos2address(a:winid, curpos)
+	return address
+endfunction
+
+" カーソル位置のバイトを取得する
+function! xxd#core#view#byte#getbyte(winid) abort
+	let curpos = xxd#core#view#byte#getcurpos(a:winid)
+	let line = winbufnr(a:winid)->getbufoneline(curpos[0] + 1)
+	let blobs = xxd#util#line2blob(line)
+	return blobs[curpos[1]:curpos[1]]
+endfunction
+
 " addressをposに変換する
 function! xxd#core#view#byte#address2pos(winid, address) abort
 	let pos = [ 0, 0 ]

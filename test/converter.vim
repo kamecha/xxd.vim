@@ -37,3 +37,17 @@ function s:suite.xxd_line2address_no_char() abort
 	call s:assert.equals(actual, expected)
 endfunction
 
+function s:suite.xxd_blob2hex() abort
+	let blob = 0z00.01.02
+	let expected = 0x000102
+	let actual = xxd#util#blob2hex(blob, 'big')
+	call s:assert.equals(actual, expected)
+endfunction
+
+function s:suite.xxd_blob2hex_little() abort
+	let blob = 0z00.01.02
+	let expected = 0x020100
+	let actual = xxd#util#blob2hex(blob, 'little')
+	call s:assert.equals(actual, expected)
+endfunction
+

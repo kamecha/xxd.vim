@@ -32,3 +32,22 @@ function xxd#util#line2address(line) abort
 	let address = address_str->str2nr(16)
 	return address
 endfunction
+
+" 0z00.01.02
+" return: 0x000102 (big endian)
+" return: 0x020100 (little endian)
+function xxd#util#blob2hex(blob, endian) abort
+	let hexstr = ''
+	if a:endian == 'big'
+		for b in a:blob
+			let hexstr .= printf('%02X', b)
+		endfor
+	endif
+	if a:endian == 'little'
+		for b in reverse(a:blob)
+			let hexstr .= printf('%02X', b)
+		endfor
+	endif
+	execute 'let hex = ' . '0x' . hexstr
+	return hex
+endfunction

@@ -1,14 +1,4 @@
 
-function! xxd#core#get_byte(bufnr, byte_pos) abort
-	let line = getbufline(a:bufnr, a:byte_pos[0] + 1)
-	let bytes = line
-				\->substitute('^\d\+:\s', '', '')
-				\->substitute('.\{16}$', '', '')
-				\->substitute('\s', '', 'g')
-				\->trim()
-	return bytes[2 * a:byte_pos[1] : 2 * a:byte_pos[1] + 1]
-endfunction
-
 function! xxd#core#get_bytes(bufnr, byte_pos, length) abort
 	let bytes = []
 	for i in range(a:length)
@@ -18,22 +8,6 @@ function! xxd#core#get_bytes(bufnr, byte_pos, length) abort
 					\]))
 	endfor
 	return bytes
-endfunction
-
-function! xxd#core#get_hex(bufnr, byte_pos, length, endian) abort
-	let bytes = xxd#core#get_bytes(a:bufnr, a:byte_pos, a:length)
-	if a:endian == 'big'
-		return join(bytes, '')
-	endif
-	if a:endian == 'little'
-		return join(reverse(bytes), '')
-	endif
-	return ''
-endfunction
-
-function! xxd#core#get_byte_pos(bytes) abort
-	let max_byte_width = 16
-	return [ a:bytes / max_byte_width, a:bytes % max_byte_width ]
 endfunction
 
 function! xxd#core#mark_byte_pos(pos_start, pos_end, hl_group) abort
