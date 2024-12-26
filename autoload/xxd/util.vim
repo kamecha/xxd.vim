@@ -51,3 +51,21 @@ function xxd#util#blob2hex(blob, endian) abort
 	execute 'let hex = ' . '0x' . hexstr
 	return hex
 endfunction
+
+" "0z00.01.02"
+" return: 0z00.01.02
+" str2nr()みたいな挙動を目指す
+function xxd#util#str2blob(str) abort
+	let blob = 0z
+	let blob_str = a:str
+				\->substitute('^0z', '', '')
+				\->substitute('\.', '', 'g')
+				\->trim()
+	for b in split(blob_str, '[0-9a-f]\{2}\zs')
+		if len(b) == 2
+			execute 'let blob += 0z' . b
+		endif
+	endfor
+	return blob
+endfunction
+
