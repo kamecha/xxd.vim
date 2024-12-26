@@ -72,3 +72,11 @@ function s:suite.xxd_str2blob_middle() abort
 	call s:assert.equals(actual, expected)
 endfunction
 
+function s:suite.xxd_searchblob() abort
+	let blob = 0z00.0102.03.0102
+	" 0z0102を検索
+	let expected = [ [ 1, 2 ], [ 4, 2 ] ]
+	let actual = xxd#util#searchblob(blob, 0z0102)
+	call s:assert.equals(actual, expected)
+endfunction
+

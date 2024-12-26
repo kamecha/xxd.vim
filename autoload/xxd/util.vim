@@ -69,3 +69,18 @@ function xxd#util#str2blob(str) abort
 	return blob
 endfunction
 
+" 0z00.01.02.03.00.01.02
+" return: [ [ start, length ] ]
+" startはアドレスに近い
+function xxd#util#searchblob(blobs, blob) abort
+	let ret = []
+	if empty(a:blob)
+		return ret
+	endif
+	for i in range(len(a:blobs) - len(a:blob) + 1)
+		if a:blobs[i:i + len(a:blob) - 1] == a:blob
+			call add(ret, [ i, len(a:blob) ])
+		endif
+	endfor
+	return ret
+endfunction
