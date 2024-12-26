@@ -11,10 +11,11 @@ function! xxd#core#view#byte#cursor(args) abort
 	" colまでの空白の個数
 	let byteline = line->matchstr('^\d\+:\zs.*')
 	let bytespos = byteline->matchend('\(\s*[0-9a-f]\{2}\)\{' . string(a:args[1] + 1) . '}')
-	let cursor = [a:args[0] + 1, address->len() + bytespos]
+	let cursor = [a:args[0] + 1, address->len() + bytespos - 1]
 	call cursor(cursor)
 endfunction
 
+" return: [lnum, col]
 function! xxd#core#view#byte#getcurpos(winid) abort
 	let curpos = getcurpos(a:winid)
 	let lnum = curpos[1]
