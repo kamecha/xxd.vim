@@ -22,7 +22,7 @@ function! xxd#command#complete(arglead, cmdline, cursorpos) abort
 	endif
 	let cmdline = matchstr(a:cmdline, '^.\{-}Xxd\s\+\zs.*')
 	let scheme = matchstr(cmdline, '^\w\+')
-	let schemes = glob(expand('<sfile>:p:h') . '/autoload/xxd/command/*.vim', 0, 1)
+	let schemes = glob(expand('<script>:p:h') . '/command/*.vim', 0, 1)
 				\->map({_, v -> matchstr(fnamemodify(v, ':t'), '^\w\+')})
 	" schemeが正しい場合
 	if schemes->index(scheme) != -1
