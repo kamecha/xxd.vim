@@ -26,6 +26,17 @@ function! xxd#core#view#byte#getcurpos(winid) abort
 	return [ lnum - 1, byteline->split('[0-9a-f]\{2}\zs')->len() - 1 ]
 endfunction
 
+" return: [lnum, col]
+function! xxd#core#view#byte#getpos(expr) abort
+	if a:expr == '.'
+		return xxd#core#view#byte#getcurpos(win_getid())
+	endif
+	if a:expr == '$'
+		let blobs = getline('$')->xxd#util#line2blob()
+		return [ line('$') - 1, blobs->len() - 1 ]
+	endif
+endfunction
+
 " カーソル位置のアドレスを取得する
 function! xxd#core#view#byte#getaddress(winid) abort
 	let curpos = xxd#core#view#byte#getcurpos(a:winid)
