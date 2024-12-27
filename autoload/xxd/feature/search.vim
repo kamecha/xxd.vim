@@ -86,7 +86,7 @@ function xxd#feature#search#sortbyte(search_result, address, direction) abort
 	let ok = len(a:search_result)
 	while ng + 1 < ok
 		let mid = (ng + ok) / 2
-		if a:address > a:search_result[mid][0] + a:search_result[mid][1]
+		if a:address >= a:search_result[mid][0]
 			let ng = mid
 		else
 			let ok = mid
