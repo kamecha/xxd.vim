@@ -38,9 +38,6 @@ endfunction
 " 検索とハイライト
 " input中に常時発動するイメージ
 function xxd#feature#search#byte(winid, bytes) abort
-	" 以前に定義されてたらそれを代入
-	let b:xxd_search_match = get(b:, 'xxd_search_match', [])
-	let b:xxd_search_confirmed_match = get(b:, 'xxd_search_confirmed_match', [])
 	" 前回の検索ハイライトを消す
 	for match in b:xxd_search_match
 		call matchdelete(match, a:winid)
