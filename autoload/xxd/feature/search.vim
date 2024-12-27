@@ -7,34 +7,47 @@
 " 移動した後の、nだからもう一度同じ処理で移動できる
 " 探すbyte列と検索方向だけ保存しとけば良さげかな
 
-function xxd#feature#search#start(bytes_str) abort
+function xxd#feature#search#start(bytes_str, direction) abort
 	let b:xxd_search_confirmed_str = get(b:, 'xxd_search_confirmed_str', '')
 	let b:xxd_search_confirmed_match = get(b:, 'xxd_search_confirmed_match', [])
+	let b:xxd_search_confirmed_direction = get(b:, 'xxd_search_confirmed_direction', 'forward')
 	let b:xxd_search_match = get(b:, 'xxd_search_match', [])
-	" inputを途中でやめると返り値が空文字列になる
+	let b:xxd_search_direction = a:direction
 	if a:bytes_str == ''
 		let bytes_str = input('Search byte sequence/', '0z')
+		" inputを途中でやめると返り値が空文字列になる
+		" 空文字列での<CR> or <ESC>の場合
+		if bytes_str == ''
+			" 検索を中断する
+			for match in b:xxd_search_match
+				call matchdelete(match, win_getid())
+				let b:xxd_search_match = []
+			endfor
+			call xxd#feature#search#byte(
+						\win_getid(),
+						\b:xxd_search_confirmed_str->xxd#util#str2blob()
+						\)
+		else
+			" 検索文字列を確定させる
+			let b:xxd_search_confirmed_str = bytes_str
+			let b:xxd_search_confirmed_direction = a:direction
+			let b:xxd_search_confirmed_match = b:xxd_search_match
+			call xxd#feature#search#byte(
+						\win_getid(),
+						\b:xxd_search_confirmed_str->xxd#util#str2blob()
+						\)
+			" 検索箇所にジャンプ
+			eval win_getid()
+						\->xxd#core#view#byte#address2pos(b:xxd_search_result[0][0])
+						\->xxd#core#view#byte#cursor()
+		endif
 	else
+		" `n` or `N`での確定検索文字列でのexclusive検索
+		" 確定をしない
 		let bytes_str = a:bytes_str
-	endif
-	" 空文字列での<CR> or <ESC>の場合
-	if bytes_str == ''
-		" 検索を中断する
-		for match in b:xxd_search_match
-			call matchdelete(match, win_getid())
-			let b:xxd_search_match = []
-		endfor
 		call xxd#feature#search#byte(
 					\win_getid(),
-					\b:xxd_search_confirmed_str->xxd#util#str2blob()
-					\)
-	else
-		" 検索文字列を確定させる
-		let b:xxd_search_confirmed_str = bytes_str
-		let b:xxd_search_confirmed_match = b:xxd_search_match
-		call xxd#feature#search#byte(
-					\win_getid(),
-					\b:xxd_search_confirmed_str->xxd#util#str2blob()
+					\bytes_str->xxd#util#str2blob()
 					\)
 		" 検索箇所にジャンプ
 		eval win_getid()
@@ -61,7 +74,7 @@ function xxd#feature#search#byte(winid, bytes) abort
 				\ xxd#core#view#byte#getpos('.')
 				\)
 	let b:xxd_search_result = xxd#util#searchblob(blobs, a:bytes)
-				\->xxd#feature#search#sortbyte(next_direction_address, 'forward')
+				\->xxd#feature#search#sortbyte(next_direction_address, b:xxd_search_direction)
 	if b:xxd_search_result->len()
 		let next_match = b:xxd_search_result[0]
 		let b:xxd_search_match += xxd#core#view#byte#matchaddaddrlen("IncSearch", next_match[0], next_match[1])
@@ -83,24 +96,38 @@ endfunction
 "	一番目の要素が次のマッチ
 function xxd#feature#search#sortbyte(search_result, address, direction) abort
 	let ret = []
-	" TODO: いったんforwardのみを意識
-	" マッチを選択
-	" 二分探索とか良さそう
-	" ng側を設定して、それのmodとった次をマッチにすると1個の時もそのまま対応できそう
-	let ng = -1
-	let ok = len(a:search_result)
-	while ng + 1 < ok
-		let mid = (ng + ok) / 2
-		if a:address >= a:search_result[mid][0]
-			let ng = mid
-		else
-			let ok = mid
-		endif
-	endwhile
-	for i in range(len(a:search_result))
-		let idx = (i + ok) % len(a:search_result)
-		call add(ret, a:search_result[idx])
-	endfor
+	if a:direction == 'forward'
+		let ng = -1
+		let ok = len(a:search_result)
+		while ng + 1 < ok
+			let mid = (ng + ok) / 2
+			if a:address >= a:search_result[mid][0]
+				let ng = mid
+			else
+				let ok = mid
+			endif
+		endwhile
+		for i in range(len(a:search_result))
+			let idx = (i + ok) % len(a:search_result)
+			call add(ret, a:search_result[idx])
+		endfor
+	endif
+	if a:direction == 'backward'
+		let ng = len(a:search_result)
+		let ok = -1
+		while ok + 1 < ng
+			let mid = (ok + ng) / 2
+			if a:address <= a:search_result[mid][0] + a:search_result[mid][1] - 1
+				let ng = mid
+			else
+				let ok = mid
+			endif
+		endwhile
+		for i in range(len(a:search_result))
+			let idx = (ok + (len(a:search_result) - i)) % len(a:search_result)
+			call add(ret, a:search_result[idx])
+		endfor
+	endif
 	return ret
 endfunction
 
