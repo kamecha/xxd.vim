@@ -7,12 +7,16 @@
 " 移動した後の、nだからもう一度同じ処理で移動できる
 " 探すbyte列と検索方向だけ保存しとけば良さげかな
 
-function xxd#feature#search#start() abort
+function xxd#feature#search#start(bytes_str) abort
 	let b:xxd_search_confirmed_str = get(b:, 'xxd_search_confirmed_str', '')
 	let b:xxd_search_confirmed_match = get(b:, 'xxd_search_confirmed_match', [])
 	let b:xxd_search_match = get(b:, 'xxd_search_match', [])
 	" inputを途中でやめると返り値が空文字列になる
-	let bytes_str = input('Search byte sequence/', '0z')
+	if a:bytes_str == ''
+		let bytes_str = input('Search byte sequence/', '0z')
+	else
+		let bytes_str = a:bytes_str
+	endif
 	" 空文字列での<CR> or <ESC>の場合
 	if bytes_str == ''
 		" 検索を中断する
@@ -28,6 +32,10 @@ function xxd#feature#search#start() abort
 		" 検索文字列を確定させる
 		let b:xxd_search_confirmed_str = bytes_str
 		let b:xxd_search_confirmed_match = b:xxd_search_match
+		call xxd#feature#search#byte(
+					\win_getid(),
+					\b:xxd_search_confirmed_str->xxd#util#str2blob()
+					\)
 		" 検索箇所にジャンプ
 		eval win_getid()
 					\->xxd#core#view#byte#address2pos(b:xxd_search_result[0][0])
