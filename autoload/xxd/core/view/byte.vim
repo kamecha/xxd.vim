@@ -7,10 +7,10 @@
 function! xxd#core#view#byte#cursor(args) abort
 	" 00000000: 6a75 6d70 2e76 696d 0a00 0000 0000 0000  jump.vim........
 	let line = getline(a:args[0] + 1)
-	let address = line->matchstr('^\d\+:')
+	let address = line->matchstr('^[0-9a-fA-F]\+:')
 	" colまでの空白の個数
-	let byteline = line->matchstr('^\d\+:\zs.*')
-	let bytespos = byteline->matchend('\(\s*[0-9a-f]\{2}\)\{' . string(a:args[1] + 1) . '}')
+	let byteline = line->matchstr('^[0-9a-fA-F]\+:\zs.*')
+	let bytespos = byteline->matchend('\(\s*[0-9a-fA-F]\{2}\)\{' . string(a:args[1] + 1) . '}')
 	let cursor = [a:args[0] + 1, address->len() + bytespos - 1]
 	call cursor(cursor)
 endfunction
@@ -22,8 +22,8 @@ function! xxd#core#view#byte#getcurpos(winid) abort
 	let col = curpos[2]
 	" 000010: 0010 0020 4F00 0000 0000 0000 0000 0000  ...
 	let line = winbufnr(a:winid)->getbufoneline(curpos[1])
-	let byteline = line[0:col - 1]->matchstr('^\d\+:\zs.*')
-	return [ lnum - 1, byteline->split('[0-9a-f]\{2}\zs')->len() - 1 ]
+	let byteline = line[0:col - 1]->matchstr('^[0-9a-fA-F]\+:\zs.*')
+	return [ lnum - 1, byteline->split('[0-9a-fA-F]\{2}\zs')->len() - 1 ]
 endfunction
 
 " return: [lnum, col]
@@ -99,10 +99,10 @@ endfunction
 " byte_posと実際のposの変換
 function! xxd#core#view#byte#pos2rel(winid, pos) abort
 	let line = winbufnr(a:winid)->getbufoneline(a:pos[0] + 1)
-	let address = line->matchstr('^\d\+:')
+	let address = line->matchstr('^[0-9a-fA-F]\+:')
 	" colまでの空白の個数
-	let byteline = line->matchstr('^\d\+:\zs.*')
-	let bytespos = byteline->matchend('\(\s*[0-9a-f]\{2}\)\{' . string(a:pos[1] + 1) . '}')
+	let byteline = line->matchstr('^[0-9a-fA-F]\+:\zs.*')
+	let bytespos = byteline->matchend('\(\s*[0-9a-fA-F]\{2}\)\{' . string(a:pos[1] + 1) . '}')
 	let relpos = [a:pos[0] + 1, address->len() + bytespos - 1]
 	return relpos
 endfunction

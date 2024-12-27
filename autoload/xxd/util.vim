@@ -61,7 +61,7 @@ function xxd#util#str2blob(str) abort
 				\->substitute('^0z', '', '')
 				\->substitute('\.', '', 'g')
 				\->trim()
-	for b in split(blob_str, '[0-9a-f]\{2}\zs')
+	for b in split(blob_str, '[0-9a-fA-F]\{2}\zs')
 		if len(b) == 2
 			execute 'let blob += 0z' . b
 		endif
