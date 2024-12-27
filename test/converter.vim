@@ -17,7 +17,7 @@ function s:suite.xxd_line2blob_tiny_byte() abort
 endfunction
 
 function s:suite.xxd_line2blob_no_char() abort
-	let line = '000010: 0010 0020 4F00'
+	let line = '0000a0: 0010 0020 4F00'
 	let expected = 0z0010.0020.4F00
 	let actual = xxd#util#line2blob(line)
 	call s:assert.equals(actual, expected)
@@ -31,8 +31,8 @@ function s:suite.xxd_line2address_default() abort
 endfunction
 
 function s:suite.xxd_line2address_no_char() abort
-	let line = '000010: 0010 0020 4F00'
-	let expected = 0x0010
+	let line = '0000a0: 0010 0020 4F00'
+	let expected = 0x00a0
 	let actual = xxd#util#line2address(line)
 	call s:assert.equals(actual, expected)
 endfunction
