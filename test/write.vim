@@ -22,6 +22,7 @@ function s:suite.xxd_write_line_replace() abort
 	call setline(1, '00001: 32 33')
 	write
 	call s:assert.equals(readfile(file_actual, 'b'), readfile(file_expected, 'b'))
+	bdelete!
 endfunction
 
 " 右端のエンコードがある場合
@@ -40,6 +41,7 @@ function s:suite.xxd_write_line_with_char_replace() abort
 	call setline(1, '00001: 32 33  23')
 	write
 	call s:assert.equals(readfile(file_actual, 'b'), readfile(file_expected, 'b'))
+	bdelete!
 endfunction
 
 " 書き込むbyte数が元より大きい場合
@@ -58,6 +60,7 @@ function s:suite.xxd_write_line_with_char_add() abort
 	call setline(1, '00000: 3031 3233 3435 3637 3839 4142 4344 4546')
 	write
 	call s:assert.equals(readfile(file_actual, 'b'), readfile(file_expected, 'b'))
+	bdelete!
 endfunction
 
 " 書き込むアドレスが元より大きい場合
@@ -76,6 +79,7 @@ function s:suite.xxd_write_line_with_char_add_along() abort
 	call setline(1, '00007: 37 38 39')
 	write
 	call s:assert.equals(readfile(file_actual, 'b'), readfile(file_expected, 'b'))
+	bdelete!
 endfunction
 
 function s:suite.xxd_write_through() abort
@@ -89,6 +93,7 @@ function s:suite.xxd_write_through() abort
 	execute 'Xxd! ' . file_actual
 	write
 	call s:assert.equals(readfile(file_actual, 'b'), readfile(file_expected, 'b'))
+	bdelete!
 endfunction
 
 function s:suite.xxd_write_through_with_parameter() abort
@@ -103,6 +108,7 @@ function s:suite.xxd_write_through_with_parameter() abort
 	execute 'Xxd! ' . options . file_actual
 	write
 	call s:assert.equals(readfile(file_actual, 'b'), readfile(file_expected, 'b'))
+	bdelete!
 endfunction
 
 " バッファを編集した後に保存する場合
@@ -121,5 +127,6 @@ function s:suite.xxd_write_replace() abort
 	s/30/46
 	write
 	call s:assert.equals(readfile(file_actual, 'b'), readfile(file_expected, 'b'))
+	bdelete!
 endfunction
 

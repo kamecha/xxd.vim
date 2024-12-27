@@ -15,6 +15,7 @@ function s:suite.xxd_jump_default() abort
 	let actual = xxd#core#view#byte#getcurpos(win_getid())
 	call s:assert.equals(actual, expected)
 	" TODO: 書きこんだバッファの後処理しとく
+	bdelete!
 endfunction
 
 " jumpした後のbyteposで比較する
@@ -30,6 +31,7 @@ function s:suite.xxd_jump_g1() abort
 	let actual = xxd#core#view#byte#getcurpos(win_getid())
 	call s:assert.equals(actual, expected)
 	" TODO: 書きこんだバッファの後処理しとく
+	bdelete!
 endfunction
 
 function s:suite.xxd_jump_s5() abort
@@ -42,5 +44,6 @@ function s:suite.xxd_jump_s5() abort
 	Xxd jump 0x08
 	let actual = xxd#core#view#byte#getcurpos(win_getid())
 	call s:assert.equals(actual, expected)
+	bdelete!
 endfunction
 
