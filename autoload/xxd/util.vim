@@ -48,8 +48,7 @@ function xxd#util#blob2hex(blob, endian) abort
 			let hexstr .= printf('%02X', b)
 		endfor
 	endif
-	execute 'let hex = ' . '0x' . hexstr
-	return hex
+	return hexstr->str2nr(16)
 endfunction
 
 " "0z00.01.02"
