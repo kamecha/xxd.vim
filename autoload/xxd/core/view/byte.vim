@@ -107,6 +107,51 @@ function! xxd#core#view#byte#pos2rel(winid, pos) abort
 	return relpos
 endfunction
 
+" 1-indexの [lnum, col] をbyteの0-indexのposに変換する
+" 00000000: 096c 6574 2072 656c 706f 7320 3d20 5b61  .let relpos = [a
+"   ^ ここ[ 1, 3 ] -> [ 0, 0 ]
+"           ^ ここ[ 1, 11 ] -> [ 0, 0 ]
+"               ^ ここ[ 1, 15 ] -> [ 0, 2 ]
+"                                                   ^ ここ[ 1, 17 ] -> [ 0, 3 ]
+function xxd#core#view#byte#rel2pos(winid, rel) abort
+	let pos = [ a:rel[0] - 1, 0 ]
+	let line = winbufnr(a:winid)->getbufoneline(a:rel[0])
+	let address = line->matchstr('^[0-9a-fA-F]\+:')
+	let byteline = line
+				\->matchstr('^[0-9a-fA-F]\+:\zs.*')
+				\->matchstr('.*\ze\s\{2}.*$')
+	let char = line->matchstr('\s\{2}\zs.*$')
+	if a:rel[1] <= address->len()
+		" アドレス部分
+		let pos[1] = 0
+	elseif a:rel[1] > line->len() - char->len()
+		" 右側のデコードした文字列部分
+		let pos[1] = byteline
+					\->substitute('\s', '', 'g')
+					\->len()
+					\ / 2 - 1
+	else
+		let byteline = line[ address->len() : a:rel[1] - 1]
+					\->substitute('\s', '', 'g')
+		" [0-9a-fA-F]\{2}の個数
+		if line[a:rel[1] - 1] == ' '
+			" byteとの間の空白はその次のbyteのposを表す
+			let pos[1] = byteline
+						\->len()
+						\ / 2
+		else
+			if byteline->len() % 2 == 0
+				" byteの右端の場合
+				let pos[1] = byteline->len() / 2 - 1
+			else
+				" byteの左端の場合
+				let pos[1] = byteline->len() / 2
+			endif
+		endif
+	endif
+	return pos
+endfunction
+
 " posはbyte_pos [ lnum, col ]
 " return: match_id
 function xxd#core#view#byte#matchaddpos(group, pos) abort
