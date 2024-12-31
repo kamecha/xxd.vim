@@ -84,3 +84,15 @@ function xxd#util#searchblob(blobs, blob) abort
 	endfor
 	return ret
 endfunction
+
+" lhs: [ start, length ], rhs: [ start, length ]
+" return v:true if lhs < rhs
+function xxd#util#islesspos(lhs, rhs) abort
+	if a:lhs[0] < a:rhs[0]
+		return v:true
+	endif
+	if a:lhs[0] == a:rhs[0] && a:lhs[1] < a:rhs[1]
+		return v:true
+	endif
+	return v:false
+endfunction

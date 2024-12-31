@@ -6,6 +6,8 @@ command! -nargs=* -bang
 			\ Xxd
 			\ call xxd#command#call(<q-bang>, <q-args>)
 
+let g:xxd_inspector_list = get(g:, 'xxd_inspector_list', [])
+
 augroup xxd
 	autocmd!
 	autocmd BufWriteCmd xxd://* call xxd#command#_raw#write(bufnr())
@@ -16,4 +18,7 @@ augroup xxd
 				\     getcmdline()->xxd#util#str2blob()
 				\   )
 				\ | endif
+	autocmd CursorMoved xxd://* eval
+				\ xxd#feature#inspector#getblob()
+				\ ->xxd#feature#inspector#draw(g:xxd_inspector_list)
 augroup END
