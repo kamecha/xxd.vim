@@ -35,6 +35,12 @@ function! xxd#core#view#byte#getpos(expr) abort
 		let blobs = getline('$')->xxd#util#line2blob()
 		return [ line('$') - 1, blobs->len() - 1 ]
 	endif
+	" ビジュアルモード以外はカーソル位置、ビジュアルモードは選択範囲の反対側
+	if a:expr == 'v'
+		let relpos = getpos('v')
+		return xxd#core#view#byte#rel2pos(win_getid(), [ relpos[1], relpos[2] ])
+	endif
+	return [ 0, 0 ]
 endfunction
 
 " カーソル位置のアドレスを取得する
