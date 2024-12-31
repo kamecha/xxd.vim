@@ -23,6 +23,7 @@ function! xxd#core#view#byte#getcurpos(winid) abort
 	" 000010: 0010 0020 4F00 0000 0000 0000 0000 0000  ...
 	let line = winbufnr(a:winid)->getbufoneline(curpos[1])
 	let byteline = line[0:col - 1]->matchstr('^[0-9a-fA-F]\+:\zs.*')
+	" FIXME: address部分にいる時とか考慮できてない
 	return [ lnum - 1, byteline->split('[0-9a-fA-F]\{2}\zs')->len() - 1 ]
 endfunction
 
