@@ -1,5 +1,5 @@
 
-nnoremap <buffer><silent> <Plug>(xxd-search-start-forwad)
+nnoremap <buffer><silent> <Plug>(xxd-search-start-forward)
 			\ <Cmd>call xxd#feature#search#start('', 'forward')<CR>
 
 nnoremap <buffer><silent> <Plug>(xxd-search-start-backward)
