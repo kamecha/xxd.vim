@@ -84,6 +84,25 @@ function xxd#util#searchblob(blobs, blob) abort
 	return ret
 endfunction
 
+function xxd#util#debug_blob(blob) abort
+	" 0001.0203.0405.0607.0809.0A0B.0C0D.0E0F
+	" 1011. ...
+	" ↑のような形式で表示
+	let hexstr = ''
+	for b in a:blob
+		let hexstr .= printf('%02X', b)
+	endfor
+	" 2byteごとに区切る
+	let hexstr = hexstr
+				\->substitute('\(\w\{4}\)', '\1.', 'g')
+	" 16byteごとに改行
+	let hexstr = hexstr
+				\->substitute('\(\(\w\{4}\.\)\{8}\)', '\1\n', 'g')
+	for line in split(hexstr, '\n')
+		echomsg line
+	endfor
+endfunction
+
 " lhs: [ start, length ], rhs: [ start, length ]
 " return v:true if lhs < rhs
 function xxd#util#islesspos(lhs, rhs) abort
