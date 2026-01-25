@@ -76,11 +76,14 @@ function xxd#util#searchblob(blobs, blob) abort
 	if empty(a:blob)
 		return ret
 	endif
-	for i in range(len(a:blobs) - len(a:blob) + 1)
+	" indexを使った探索
+	let i = index(a:blobs, a:blob[0])
+	while i != -1
 		if a:blobs[i:i + len(a:blob) - 1] == a:blob
 			call add(ret, [ i, len(a:blob) ])
 		endif
-	endfor
+		let i = index(a:blobs, a:blob[0], i + 1)
+	endwhile
 	return ret
 endfunction
 

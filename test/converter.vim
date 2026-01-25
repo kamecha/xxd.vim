@@ -80,6 +80,39 @@ function s:suite.xxd_searchblob() abort
 	call s:assert.equals(actual, expected)
 endfunction
 
+function s:suite.xxd_searchblob_large_all() abort
+	let blob = 0z
+	" 10 Mbit
+	let size = 1 * 1000 * 1000 * 10
+	for i in range(size)
+		let blob += 0z00
+	endfor
+	let expected = []
+	for i in range(size)
+		call add(expected, [i, 1])
+	endfor
+	" execute "!echo " . ( size / 1000 ) / 1000 . "Mbit"
+	let actual = xxd#util#searchblob(blob, 0z00)
+	call s:assert.equals(actual, expected)
+endfunction
+
+function s:suite.xxd_searchblob_large_cycle() abort
+	let blob = 0z
+	" 10 Mbit
+	let size = 1 * 1000 * 1000 * 10
+	for i in range(size)
+		execute 'let blob += 0z' . printf('%02X', i % 10)
+	endfor
+	let expected = []
+	for i in range(size)
+		if i % 10 == 0
+			call add(expected, [i, 1])
+		endif
+	endfor
+	let actual = xxd#util#searchblob(blob, 0z00)
+	call s:assert.equals(actual, expected)
+endfunction
+
 function s:suite.xxd_address2pos() abort
 	let dump = [
 				\"00000000: 3842 5053 0001 0000 0000 0000 0003 0000  8BPS............",
